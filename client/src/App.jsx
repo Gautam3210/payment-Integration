@@ -4,10 +4,30 @@ import Card from "./Card";
 
 function App() {
   const handleBuyItemButton = async (amount) => {
-    const res = await axios.post("http://localhost:5000/create-order", {
+    const { data } = await axios.post("http://localhost:5000/create-order", {
       amount,
     });
-    console.log(res.data);
+    const keyId = await axios.get("http://localhost:5000/get-key")
+    const options = {
+      key: keyId.data.keyId,
+      amount: data.amount,
+      currency: "INR",
+      name: "Acme Corp",
+      description: "Test Transaction",
+      order_id: data.id,
+      callback_url: "http://localhost:5000/payment-complete",
+      prefill: {
+        name: "Gaurav Kumar",
+        email: "gaurav.kumar@example.com",
+        contact: "9999999999",
+      },
+      theme: {
+        color: "#F37254",
+      },
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
   };
   return (
     <>
