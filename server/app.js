@@ -3,6 +3,7 @@ const dotenv = require("dotenv").config();
 const Razorpay = require("Razorpay");
 const cors = require("cors");
 const crypto = require("crypto");
+const payment = require('./db')
 
 const corsConfig = {
   origin: "http://localhost:5173",
@@ -45,7 +46,10 @@ app.post("/payment-complete", (req, res) => {
 
   const isAuth = expectedSignature === razorpay_signature;
   if (isAuth) {
-    
+    const savePayment = new payment({
+      razorpay_payment_id, razorpay_order_id, razorpay_signature
+    })
+    savePayment.save()
     res.send("payment successful");
   } else {
     res.send("unsuccessful")
